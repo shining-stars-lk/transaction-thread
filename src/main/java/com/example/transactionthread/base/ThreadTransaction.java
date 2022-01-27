@@ -1,6 +1,6 @@
 package com.example.transactionthread.base;
 
-import com.example.transactionthread.ThreadTransactionTask;
+import com.example.transactionthread.core.ThreadTransactionTask;
 
 /**
  * @program: transaction-thread

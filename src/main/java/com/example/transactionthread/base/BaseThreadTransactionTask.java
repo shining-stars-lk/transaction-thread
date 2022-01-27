@@ -1,7 +1,7 @@
 package com.example.transactionthread.base;
 
-import com.example.transactionthread.InputParamCallable;
-import com.example.transactionthread.InputParamRunnable;
+import com.example.transactionthread.core.InputParamCallable;
+import com.example.transactionthread.core.InputParamRunnable;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import java.util.List;

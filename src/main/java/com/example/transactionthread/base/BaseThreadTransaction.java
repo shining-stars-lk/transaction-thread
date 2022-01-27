@@ -1,11 +1,11 @@
 package com.example.transactionthread.base;
 
-import com.example.transactionthread.InputParamCallable;
-import com.example.transactionthread.MajorTaskCallable;
-import com.example.transactionthread.MajorTaskRunnable;
-import com.example.transactionthread.ThreadIndependenceTransactionTask;
-import com.example.transactionthread.ThreadTask;
-import com.example.transactionthread.ThreadTransactionTask;
+import com.example.transactionthread.core.InputParamCallable;
+import com.example.transactionthread.core.MajorTaskCallable;
+import com.example.transactionthread.core.MajorTaskRunnable;
+import com.example.transactionthread.core.ThreadIndependenceTransactionTask;
+import com.example.transactionthread.core.ThreadTask;
+import com.example.transactionthread.core.ThreadTransactionTask;
 import com.example.transactionthread.threadpool.TransactionThreadPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
