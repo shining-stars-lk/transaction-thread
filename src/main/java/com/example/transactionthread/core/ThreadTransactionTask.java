@@ -47,7 +47,7 @@ public class ThreadTransactionTask<T,V> extends BaseThreadTransactionTask<T,V> {
             taskRollBackFlagList.add(false);
         } catch (Throwable e) {
             taskRollBackFlagList.add(true);
-            throw new RuntimeException(e);
+            logger.error("task error message",e);
         } finally {
             threadCountDownLatch.countDown();
         }
