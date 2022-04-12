@@ -13,13 +13,16 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @program: transaction-thread
+ * @program: msa-toolkit
  * @description: 事务线程基类（不对外暴露，是作为ThreadTransactionTool的抽象基类）
  * @author: lk
  * @create: 2022-01-12
@@ -42,10 +45,8 @@ public class BaseThreadTransaction {
     /**
      * 异步任务基础执行
      * @param taskList 需要异步执行的任务
-     * @param callTaskList 需要异步执行的任务(有返回值)
-     * @param resultList 载异步执行任务结果的集合
      * */
-    public <V> void baseExecute(List<Runnable> taskList, List<Callable<V>> callTaskList,List<V> resultList) {
+    public void baseExecute(List<Runnable> taskList){
         try{
             if (taskList != null && taskList.size() > 0) {
                 checkTaskList(taskList, MAX_TASK);
@@ -54,18 +55,46 @@ public class BaseThreadTransaction {
                             new ThreadTask(task);
                     TransactionThreadPool.execute(threadTask);
                 }
-            }else if (callTaskList != null && callTaskList.size() > 0) {
+            }
+        }catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+    /**
+     * 异步任务基础执行
+     * @param callTaskList 需要异步执行的任务(有返回值)
+     * @param resultList 承载异步执行任务结果的集合
+     * @param sequence 是否要求resultList中的结果和执行的任务顺序相同 true是 false否
+     * */
+    public <V> void baseCall(List<Callable<V>> callTaskList,List<V> resultList,boolean sequence) {
+        try{
+            if (callTaskList != null && callTaskList.size() > 0) {
                 checkTaskList(callTaskList, MAX_TASK);
                 //任务线程计数器
-                CountDownLatch threadCountDownLatch = threadLatch(getSize(taskList,callTaskList,null));
-                List<V> executeResultList = Collections.synchronizedList(new ArrayList<>());
-                for (Callable<V> callTask : callTaskList) {
-                    ThreadTask threadTask =
-                            new ThreadTask(threadCountDownLatch,callTask,executeResultList);
-                    TransactionThreadPool.execute(threadTask);
+                CountDownLatch threadCountDownLatch = threadLatch(getSize(null,callTaskList,null));
+                if (sequence) {
+                    List<String> taskIdList = new ArrayList<>(callTaskList.size());
+                    Map<String,V> executeResultMap = new ConcurrentHashMap<>(callTaskList.size());
+                    AtomicInteger atomicInteger = new AtomicInteger(0);
+                    for (Callable<V> callTask : callTaskList) {
+                        String taskId = String.valueOf(atomicInteger.incrementAndGet());
+                        taskIdList.add(taskId);
+                        ThreadTask threadTask = new ThreadTask(threadCountDownLatch,callTask,taskId,executeResultMap);
+                        TransactionThreadPool.execute(threadTask);
+                    }
+                    threadCountDownLatch.await(20, TimeUnit.SECONDS);
+                    for (String taskId : taskIdList) {
+                        resultList.add(executeResultMap.get(taskId));
+                    }
+                }else {
+                    List<V> executeResultList = Collections.synchronizedList(new ArrayList<>());
+                    for (Callable<V> callTask : callTaskList) {
+                        ThreadTask threadTask = new ThreadTask(threadCountDownLatch,callTask,executeResultList);
+                        TransactionThreadPool.execute(threadTask);
+                    }
+                    threadCountDownLatch.await(20, TimeUnit.SECONDS);
+                    resultList.addAll(executeResultList);
                 }
-                threadCountDownLatch.await(20, TimeUnit.SECONDS);
-                resultList.addAll(executeResultList);
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -78,7 +107,7 @@ public class BaseThreadTransaction {
      * 异步任务独立事务基础执行
      * @param taskList 需要异步执行的任务
      * @param callTaskList 需要异步执行的任务(有返回值)
-     * @param resultList 载异步执行任务结果的集合
+     * @param resultList 承载异步执行任务结果的集合
      * */
     public <V> void independenceTransactionBaseExecute(List<Runnable> taskList, List<Callable<V>> callTaskList,List<V> resultList){
 
@@ -234,7 +263,7 @@ public class BaseThreadTransaction {
      * */
     private void checkTaskList(List taskList, int taskMaximum) {
         if ((taskList != null && taskList.size() > taskMaximum)) {
-            throw new RuntimeException("大于最大任务数");
+            throw new RuntimeException("The task exceeded the maximum limit");
         }
     }
 
@@ -308,7 +337,7 @@ public class BaseThreadTransaction {
         for (Boolean taskRollBackFlag : taskRollBackFlagList) {
             if (taskRollBackFlag) {
                 rollBackFlag.set(true);
-                throw new RuntimeException("任务出现异常");
+                throw new RuntimeException("an error occurred during task execution procedure");
             }
         }
     }

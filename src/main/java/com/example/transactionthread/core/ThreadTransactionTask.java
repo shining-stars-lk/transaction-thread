@@ -1,5 +1,6 @@
 package com.example.transactionthread.core;
 
+
 import com.example.transactionthread.base.BaseThreadTransactionTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @program: transaction-thread
+ * @program: msa-toolkit
  * @description: 事务线程任务类
  * @author: lk
  * @create: 2021-12-15
@@ -54,7 +55,8 @@ public class ThreadTransactionTask<T,V> extends BaseThreadTransactionTask<T,V> {
         try {
             mainCountDownLatch.await(20, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            logger.error("Interrupted error message:{}",e.getMessage());
+            Thread.currentThread().interrupt();
         }
 
         if (rollBackFlag.get()) {

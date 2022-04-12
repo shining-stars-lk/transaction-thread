@@ -8,7 +8,7 @@ import java.util.concurrent.Callable;
 
 
 /**
- * @program: transaction-thread
+ * @program: msa-toolkit
  * @description: 事务线程工具类
  * @author: lk
  * @create: 2021-12-15
@@ -21,16 +21,17 @@ public class ThreadTransactionTool extends BaseThreadTransaction {
      * @param taskList 需要异步执行的任务
      */
     public void execute(List<Runnable> taskList) {
-        super.baseExecute(taskList,null,null);
+        super.baseExecute(taskList);
     }
 
     /**
      * 异步任务运行
      * @param callTaskList 需要异步执行的任务(有返回值)
      * @param resultList 承载异步执行任务结果的集合
+     * @param sequence 是否要求执行的任务 和 承载异步执行任务结果的集合保证顺序
      */
-    public <V> void call(List<Callable<V>> callTaskList,List<V> resultList) {
-        super.baseExecute(null,callTaskList,resultList);
+    public <V> void call(List<Callable<V>> callTaskList,List<V> resultList,boolean sequence) {
+        super.baseCall(callTaskList,resultList,sequence);
     }
 
     /**

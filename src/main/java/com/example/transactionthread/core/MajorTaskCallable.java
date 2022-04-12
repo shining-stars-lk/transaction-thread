@@ -2,7 +2,7 @@ package com.example.transactionthread.core;
 
 
 /**
- * @program: transaction-thread
+ * @program: msa-toolkit
  * @description: 有返回值的主任务接口
  * @author: lk
  * @create: 2021-12-23

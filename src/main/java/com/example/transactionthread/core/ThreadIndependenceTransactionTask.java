@@ -1,5 +1,6 @@
 package com.example.transactionthread.core;
 
+
 import com.example.transactionthread.base.BaseThreadTransactionTask;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -11,7 +12,7 @@ import java.util.concurrent.CountDownLatch;
 
 
 /**
- * @program: transaction-thread
+ * @program: msa-toolkit
  * @description: 独立事务线程任务类
  * @author: lk
  * @create: 2022-01-14

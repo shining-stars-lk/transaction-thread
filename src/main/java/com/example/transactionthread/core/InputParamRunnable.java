@@ -1,7 +1,7 @@
 package com.example.transactionthread.core;
 
 /**
- * @program: transaction-thread
+ * @program: msa-toolkit
  * @description: 有输入参数的Runnable
  * @author: lk
  * @create: 2021-12-23

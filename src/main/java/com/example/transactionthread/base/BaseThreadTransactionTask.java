@@ -1,16 +1,18 @@
 package com.example.transactionthread.base;
 
+
 import com.example.transactionthread.core.InputParamCallable;
 import com.example.transactionthread.core.InputParamRunnable;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @program: transaction-thread
+ * @program: msa-toolkit
  * @description: 事务线程基础类
  * @author: lk
  * @create: 2022-01-14
@@ -59,6 +61,14 @@ public abstract class BaseThreadTransactionTask<T,V> implements Runnable {
      * 装入异步任务结果的list
      * */
     protected List<V> list;
+    /**
+     * 任务id
+     * */
+    protected String taskId;
+    /**
+     * 装入异步任务结果的map key:任务id value:任务结果
+     * */
+    protected Map<String,V> executeResultMap;
     /**
      * 输入参数
      */
