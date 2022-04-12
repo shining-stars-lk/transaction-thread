@@ -13,9 +13,6 @@
 ## 注意
 - 底层采用的线程池为核心线程数为`0`，最大线程数为`101`,因为如果核心数不为`0`的话，当任务数大于了线程核心数会发生死锁情况。
 - 底层采用的事务级别为`READ_COMMITTED`,如果采用`REPEATABLE_READ`,由于mysql在`REPEATABLE_READ`级别会产生间隙锁，所以可能发生死锁情况。
-## 使用
-- 项目结果为`springboot`,jar包引入、maven依赖、start依赖均可
-- 下面的api举例是为了解释使用，所以并没有提供相应数据库表
 
 # ThreadTransactionTool工具使用
 ## 提供的api
@@ -30,8 +27,9 @@ public void execute(List<Runnable> taskList)
  * 异步任务运行
  * @param callTaskList 需要异步执行的任务(有返回值)
  * @param resultList 承载异步执行任务结果的集合
+ * @param sequence 是否要求执行的任务 和 承载异步执行任务结果的集合保证顺序
  */
-public <V> void call(List<Callable<V>> callTaskList,List<V> resultList)
+public <V> void call(List<Callable<V>> callTaskList,List<V> resultList,boolean sequence)
  
 /**
  * 异步任务独立事务运行(出现异常回滚本异步任务，其他异步任务不会回滚)
@@ -134,7 +132,7 @@ public Integer addAccount(int id){
 ``` 
 ### 2. public <V> void call(List<Callable<V>> callTaskList,List<V> resultList)
 #### 说明
-异步任务运行，通过`List类型入参`拿到异步任务结果。  
+异步任务运行，通过`List类型入参`拿到异步任务结果。
 ```java
 public Object addAccount(int id){
     List<Callable<Integer>> callableList = new ArrayList<>();
@@ -153,7 +151,7 @@ public Object addAccount(int id){
         callableList.add(c);
     }
     List<Integer> resultList = new ArrayList<>();
-    threadTransactionTool.call(callableList,resultList);
+    threadTransactionTool.call(callableList,resultList,true);
     return resultList;
 }
 ```  
@@ -183,7 +181,7 @@ public Integer addAccount(int id){
 
 ### 4. public <V> void independenceTransactionCall(List<Callable<V>> callTaskList,List<V> resultList)
 #### 说明
-异步任务`独立事务`运行(出现异常`回滚`本异步任务，其他异步任务`不会回滚`)，通过`List类型入参`拿到异步任务结果。  
+异步任务`独立事务`运行(出现异常`回滚`本异步任务，其他异步任务`不会回滚`)，通过`List类型入参`拿到异步任务结果。
 ```java
 public Object addAccount(int id){
     List<Callable<Integer>> callableList = new ArrayList<>();
@@ -207,7 +205,7 @@ public Object addAccount(int id){
 }
 ```  
 ### 5. public void transactionExecute(List<Runnable> taskList)
-#### 说明 
+#### 说明
 处理异步执行的任务
 ```java
 public Integer addUserAndAccount(User user){
@@ -243,9 +241,9 @@ public Integer addUserAndAccount(User user){
 ```
 #### 特点
 批量`异步任务`执行时，当其中一个出现`异常`后，其余的`异步任务`都会`回滚`。但是`当主任务`添加user的操作出现异常，异步任务`不会回滚`，需要使用`threadTransactionTool`提供的另外方法api。
-  
+
 ### 6. public <T> void transactionCall(List<Callable<T>> callTaskList, List<T> resultList)
-#### 说明 
+#### 说明
 处理异步执行的任务,并拿到异步任务`结果`
 ```java
 public Object addUserAndAccount(User user){
@@ -282,7 +280,7 @@ public Object addUserAndAccount(User user){
 }
 ```  
 #### 特点
-对`介绍5`的api增强了`接收异步结果`的功能，通过传入`resultList`参数实现。  
+对`介绍5`的api增强了`接收异步结果`的功能，通过传入`resultList`参数实现。
 
 ### 7. public void transactionExecute(MajorTaskRunnable majorTaskRunnable, List<Runnable> taskList)
 #### 说明
@@ -322,7 +320,7 @@ public Integer addUserAndAccount(User user){
 ```  
 #### 特点
 批量`异步任务`执行时，当其中一个出现`异常`后，其余的`异步任务`都会`回滚`。并且`主任务`添加user的操作出现`异常`，`异步任务`也能够`回滚`。
-  
+
 ### 8. public <T> void transactionCall(MajorTaskRunnable majorTaskRunnable, List<Callable<T>> callTaskList, List<T> resultList)
 #### 说明
 处理主任务和异步执行的任务并拿到异步任务`结果`
@@ -363,11 +361,11 @@ public Object addUserAndAccount(User user){
 }
 ```  
 #### 特点
-对`介绍7`的api增强了`接收异步结果`的功能，通过传入`resultList`参数实现。  
+对`介绍7`的api增强了`接收异步结果`的功能，通过传入`resultList`参数实现。
 
-### 9. public <T> T transactionExecute(MajorTaskCallable<T> majorTaskCallable, List<Runnable> taskList)  
+### 9. public <T> T transactionExecute(MajorTaskCallable<T> majorTaskCallable, List<Runnable> taskList)
 #### 说明
-处理主任务和异步执行的任务，并返回主任务`结果`  
+处理主任务和异步执行的任务，并返回主任务`结果`
 ```java
 public Integer addUserAndAccount(User user){
     long startTime = System.currentTimeMillis();
@@ -404,7 +402,7 @@ public Integer addUserAndAccount(User user){
 ```
 #### 特点
 对`介绍7`的api增强了`返回主任务结果`的功能。
-  
+
 ### 10. public <T,V> T transactionCall(MajorTaskCallable<T> majorTaskCallable, List<Callable<V>> callTaskList, List<V> resultList)
 #### 说明
 处理主任务和异步执行的任务，并返回主任务`结果`，并且拿到异步任务`结果`
@@ -446,10 +444,10 @@ public Object addUserAndAccount(User user){
 }
 ```  
 #### 特点
-对`介绍7`的api增强了`接收主任务结果`的功能。也增强了`接收异步结果`的功能，通过传入`resultList`参数实现。 
+对`介绍7`的api增强了`接收主任务结果`的功能。也增强了`接收异步结果`的功能，通过传入`resultList`参数实现。
 ### 11. public <T> T transactionExecuteInputParamTask(MajorTaskCallable<T> majorTaskCallable, List<InputParamRunnable<T>> inputParamTaskList)
 #### 说明
-处理主任务和异步执行的任务(`异步任务需要主任务的返回值`)，并返回主任务`结果`  
+处理主任务和异步执行的任务(`异步任务需要主任务的返回值`)，并返回主任务`结果`
 ```java
 public Object addUserAndAccount(User user){
     long startTime = System.currentTimeMillis();
@@ -533,7 +531,7 @@ public Object addUserAndAccount(User user){
     return resultList;
 }
 ```  
-  
+
 ## 原理
 
 ![](https://files.mdnice.com/user/12133/09d545fd-307d-49ed-a626-dbca688be0ac.png)
