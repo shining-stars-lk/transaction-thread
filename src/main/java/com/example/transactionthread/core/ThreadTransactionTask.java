@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @program: msa-toolkit
+ * @program: toolkit
  * @description: 事务线程任务类
  * @author: lk
  * @create: 2021-12-15

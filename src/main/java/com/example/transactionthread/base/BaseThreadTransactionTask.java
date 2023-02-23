@@ -12,7 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @program: msa-toolkit
+ * @program: toolkit
  * @description: 事务线程基础类
  * @author: lk
  * @create: 2022-01-14

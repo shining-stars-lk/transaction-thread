@@ -4,7 +4,7 @@ package com.example.transactionthread.base;
 import com.example.transactionthread.core.ThreadTransactionTask;
 
 /**
- * @program: msa-toolkit
+ * @program: toolkit
  * @description: 具体执行
  * @author: lk
  * @create: 2022-01-12

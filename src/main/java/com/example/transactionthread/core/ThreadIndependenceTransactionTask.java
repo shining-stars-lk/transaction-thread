@@ -12,7 +12,6 @@ import java.util.concurrent.CountDownLatch;
 
 
 /**
- * @program: msa-toolkit
  * @description: 独立事务线程任务类
  * @author: lk
  * @create: 2022-01-14

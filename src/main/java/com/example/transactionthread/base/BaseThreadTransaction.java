@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @program: msa-toolkit
+ * @program: toolkit
  * @description: 事务线程基类（不对外暴露，是作为ThreadTransactionTool的抽象基类）
  * @author: lk
  * @create: 2022-01-12

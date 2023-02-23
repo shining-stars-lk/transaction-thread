@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @program: transaction-thread
- * @description: 事务线程池(此线程池只做内部工具业务上请使用MsaThreadPool)
  * @author: lk
  * @create: 2021-12-16 14:09
  **/

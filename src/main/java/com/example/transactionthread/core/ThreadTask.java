@@ -8,7 +8,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * @program: msa-toolkit
+ * @program: toolkit
  * @description: 线程任务
  * @author: lk
  * @create: 2022-01-18

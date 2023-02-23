@@ -8,7 +8,7 @@ import java.util.concurrent.Callable;
 
 
 /**
- * @program: msa-toolkit
+ * @program: toolkit
  * @description: 事务线程工具类
  * @author: lk
  * @create: 2021-12-15

@@ -1,7 +1,7 @@
 package com.example.transactionthread.core;
 
 /**
- * @program: msa-toolkit
+ * @program: toolkit
  * @description: 有输入参数的Callable
  * @author: lk
  * @create: 2022-1-11
